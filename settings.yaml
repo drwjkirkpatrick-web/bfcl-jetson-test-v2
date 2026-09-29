@@ -1,0 +1,74 @@
+# BFCL Jetson Test v2 — Benchmark Settings
+# Saved 2026-09-29. Hardware: NVIDIA Jetson Orin Nano 8GB (ARM64), GDM stopped
+# (~6GB free RAM), llama.cpp v0.5.0-dev (build commit 84e76d8).
+
+hardware:
+  target: Jetson Orin Nano 8GB
+  gui: gdm stopped (sudo systemctl stop gdm.service)
+
+server:                        # launched fresh per model by scripts/run_v2.py
+  binary: ~/llama.cpp/build/bin/llama-server
+  env:
+    GGML_CUDA_ENABLE_UNIFIED_MEMORY: "1"
+  flags:
+    - "--host 127.0.0.1 --port 8090"
+    - "--jinja"                # OpenAI tool calling via differential autoparser
+    - "-c 24576"               # context: headroom over 16384 coding max_tokens
+    - "-ctk q8_0 -ctv q8_0"    # 8-bit KV cache
+    - "-b 512 -ub 512"
+    - "-fa on"                 # flash attention
+    - "-np 1 -t 6"
+    - "--fit off"
+  sampling:                    # deterministic: tool tests are greedy
+    temp: 0.0
+    top_k: 1
+    repeat_penalty: 1.0
+  per_model_overrides:         # template = file in templates/ or built-in
+    granite4-3b:        {ngl: 15, template: built-in}    # hybrid SSM: partial offload
+    granite4.1-3b:      {ngl: 15, template: built-in}
+    granite4.2-3b:      {ngl: 15, template: built-in}
+    granite3.2-2b:      {ngl: 15, template: built-in}
+    nanbeige4-3b:       {ngl: 99, template: built-in}     # thinking model
+    ternary-bonsai-q4: {ngl: 99, template: built-in}
+    ternary-bonsai-tq2: {ngl: 99, template: built-in}
+    xlam-2-1b:          {ngl: 99, template: xlam2-qwen25-tool-use.jinja}
+    xlam-2-3b:          {ngl: 99, template: xlam2-qwen25-tool-use.jinja}
+    xlam-2-8b:          {ngl: 99, template: built-in}
+    arch-agent-1.5b:    {ngl: 99, template: xlam2-qwen25-tool-use.jinja}
+    qwen2.5-3b:         {ngl: 99, template: built-in}
+    hermes3-3b-q5:      {ngl: 99, template: hermes3-tool-use.jinja}
+    hermes3-3b-q4:      {ngl: 99, template: hermes3-tool-use.jinja}
+    llama3.2-3b:       {ngl: 15, template: built-in}    # hybrid: partial offload
+    hammer2.1-3b:      {ngl: 99, template: hermes3-tool-use.jinja}
+    qwen3.5-9b:         {ngl: 99, template: built-in}   # DeltaNet hybrid
+
+harness:
+  tool_tests: {simple: 30, moderate_parallel: 12, moderate_chained: 8}
+  coding_tests:
+    python_game: pass at 3/4 checks (executed with piped input)
+    html_profile: pass at 5/7 structural checks
+  max_tokens: {tool: 512, coding: 16384}
+
+timeouts:                      # hardened so nothing stalls the 17-model run
+  per_request_seconds: 180     # client-side; 1 retry on ConnectionError only
+  per_model_seconds: 7200      # runner subprocess budget, then kill + next model
+  coding_request_seconds: 6000
+  per_test: fail-safe try/except (error recorded as FAIL, run continues)
+  incremental_save: after every single test (partial results never lost)
+
+extraction:                    # v2.1 mid-run fixes (both live now)
+  structured_tool_calls: true  # path 1: native OpenAI tool_calls field
+  text_fallback: true         # path 2: JSON in content (BFCL prompt-mode parity)
+  fallback_features:
+    - arrays, fenced JSON (```json ... ```), single objects
+    - brace-balanced scanning (nested objects)
+    - arguments|parameters|args key tolerance
+    - dedupe exact duplicates (model emits bare + fenced copy of same call)
+
+runner:
+  launch: detached (setsid); server killed + relaunched between models
+  results: results/<model>.json (gitignored, working copy)
+  archive: ~/projects/bfcl-jetson-test-v2-results/   # outside repo, for analysis
+  retest_queue:                # completed BEFORE the fixes; rerun after main run
+    - granite3.2-2b            # empty extractions (no text fallback at run time)
+    - xlam-2-1b                # duplicate-call counting bug

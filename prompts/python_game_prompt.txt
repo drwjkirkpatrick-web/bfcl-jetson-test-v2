@@ -1,0 +1,13 @@
+You are an expert Python developer. Write a complete, runnable, single-file Python tic-tac-toe game for the terminal.
+
+Requirements:
+1. The human plays X, the computer plays O.
+2. Display the board as a 3x3 grid after every move.
+3. Validate input: reject occupied or invalid cells and re-prompt.
+4. Detect win, loss, and draw conditions.
+5. The computer must make a move every turn (any strategy is fine).
+6. After the game ends, ask "Play again?" and loop on y/n.
+7. Use ONLY the Python standard library. No external packages, no file I/O, no network.
+8. Single file. The game must end cleanly when the player answers "n".
+
+Output ONLY the Python code inside a single ```python code fence. No explanations.

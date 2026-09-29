@@ -1,0 +1,12 @@
+You are an expert web developer. Write a complete, single-file HTML profile page for "Alex Rivera", a fictional wildlife photographer.
+
+Requirements:
+1. Start with <!DOCTYPE html> followed by <html>, <head>, and <body> tags.
+2. A hero section with the name in an <h1> and a one-paragraph biography.
+3. A skills section listing at least 3 skills.
+4. A contact form with name, email, and message fields plus a submit button.
+5. A <style> block: dark theme colors, responsive layout with at least one @media query.
+6. A <script> block: validate the contact form (required fields, valid email) and show a message, wired with addEventListener or onclick.
+7. Everything inline in one file. No external CSS/JS files.
+
+Output ONLY the HTML inside a single ```html code fence. No explanations.

@@ -1,0 +1,12 @@
+# Model weights
+*.gguf
+models/
+
+# Results are archived outside the repo (~/projects/bfcl-jetson-test-v2-results/)
+# Local working copies of run outputs stay untracked:
+results/*.json
+results/*.log
+
+# Python
+__pycache__/
+*.pyc
