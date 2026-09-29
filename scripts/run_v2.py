@@ -68,7 +68,7 @@ MODELS = [
     {"name": "nanbeige4-3b",  "path": "/home/walker/projects/bfcl-jetson-test/models/Nanbeige_Nanbeige4-3B-Thinking-2511-Q8_0.gguf",
      "template": None, "ctx": 24576, "ngl": 99, "note": "thinking model"},
     {"name": "ternary-bonsai-q4",  "path": "/home/walker/projects/bfcl-jetson-test/models/Ternary-Bonsai-8B-Q4_0-lossless.gguf",
-     "template": None, "ctx": 24576, "ngl": 99},
+     "template": None, "ctx": 16384, "ngl": 99, "kv": "q4_0", "note": "4.3GB: q4_0 KV to fit", "coding_max_tokens": 12288},
     {"name": "ternary-bonsai-tq2", "path": "/home/walker/projects/bfcl-jetson-test/models/Ternary-Bonsai-8B-TQ2_0.gguf",
      "template": None, "ctx": 24576, "ngl": 99},
     {"name": "xlam-2-1b",     "path": "/home/walker/projects/bfcl-jetson-test/models/xLAM-2-1B-fc-r-Q8_0.gguf",
@@ -76,7 +76,7 @@ MODELS = [
     {"name": "xlam-2-3b",     "path": "/home/walker/projects/bfcl-jetson-test/models/xLAM-2-3B-fc-r-Q8_0.gguf",
      "template": "xlam2-qwen25-tool-use.jinja", "ctx": 24576, "ngl": 99},
     {"name": "xlam-2-8b",     "path": "/home/walker/projects/bfcl-jetson-test/models/Llama-xLAM-2-8B-fc-r-Q4_K_M.gguf",
-     "template": None, "ctx": 24576, "ngl": 99},
+     "template": None, "ctx": 16384, "ngl": 99, "kv": "q4_0", "note": "4.9GB: q4_0 KV to fit", "coding_max_tokens": 12288},
     {"name": "arch-agent-1.5b", "path": "/home/walker/projects/bfcl-jetson-test/models/Arch-Agent-1.5B-q8_0.gguf",
      "template": "xlam2-qwen25-tool-use.jinja", "ctx": 24576, "ngl": 99},
     {"name": "qwen2.5-3b",    "path": "/home/walker/models/new-zoo/qwen2.5-3b.gguf",
@@ -90,7 +90,7 @@ MODELS = [
     {"name": "hammer2.1-3b",  "path": "/home/walker/projects/bfcl-jetson-test/models/Hammer2.1-3b.Q8_0.gguf",
      "template": "hermes3-tool-use.jinja", "ctx": 24576, "ngl": 99},
     {"name": "qwen3.5-9b",    "path": "/home/walker/models/Qwen_Qwen3.5-9B-Q3_K_S.gguf",
-     "template": None, "ctx": 24576, "ngl": 99, "note": "DeltaNet hybrid"},
+     "template": None, "ctx": 16384, "ngl": 99, "kv": "q4_0", "note": "4.1GB DeltaNet hybrid: q4_0 KV to fit", "coding_max_tokens": 12288},
 ]
 
 
@@ -127,8 +127,8 @@ def launch_server(model: dict) -> subprocess.Popen:
         "--port", str(PORT),
         "-ngl", str(model["ngl"]),
         "-c", str(model["ctx"]),
-        "-ctk", "q8_0",
-        "-ctv", "q8_0",
+        "-ctk", model.get("kv", "q8_0"),
+        "-ctv", model.get("kv", "q8_0"),
         "-b", "512", "-ub", "512",
         "-fa", "on",
         "--jinja",
@@ -207,11 +207,15 @@ def main() -> int:
         if args.tool_tests_only:
             cmd.append("--tool-tests-only")
         else:
-            cmd += ["--coding-timeout", "6000"]
+            cmd += ["--coding-timeout", "6000",
+                    "--coding-max-tokens", str(m.get("coding_max_tokens", 16384))]
         harness_args = []
         try:
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=7200)
             print(r.stdout[-2500:])
+            if r.returncode != 0:
+                print(f"  HARNESS CRASHED (exit {r.returncode}):")
+                print("  " + r.stderr[-1200:].replace("\n", "\n  "))
         except subprocess.TimeoutExpired:
             print(f"  TIMEOUT — model took > 2h")
         proc.kill()

@@ -66,9 +66,20 @@ extraction:                    # v2.1 mid-run fixes (both live now)
     - dedupe exact duplicates (model emits bare + fenced copy of same call)
 
 runner:
-  launch: detached (setsid); server killed + relaunched between models
+  launch: detached; server killed + relaunched between models
   results: results/<model>.json (gitignored, working copy)
   archive: ~/projects/bfcl-jetson-test-v2-results/   # outside repo, for analysis
-  retest_queue:                # completed BEFORE the fixes; rerun after main run
-    - granite3.2-2b            # empty extractions (no text fallback at run time)
-    - xlam-2-1b                # duplicate-call counting bug
+  retests_completed:           # v2.1 fixed-harness retests (2026-09-29)
+    - granite3.2-2b: 1.9% -> 82.7%  (text-fallback extraction)
+    - xlam-2-1b:    3.8% -> 84.6%  (duplicate-call dedupe)
+    - ternary-bonsai-q4: server-fail -> 84.6% (16K ctx + q4_0 KV)
+    - xlam-2-8b:    server-fail -> 80.8% (16K ctx + q4_0 KV)
+  pending:                     # PAUSED 2026-09-29 at user request
+    - qwen3.5-9b: OOM-killed twice (24K q8_0 ctx, then 16K q4_0 ctx; kernel
+      killed llama-server at ~4.6-4.9GB anon-rss). Next attempt: ctx 12288,
+      q4_0 KV, coding-max-tokens 8192 — or tool-tests-only at 8192 like v1.
+      GUI (gdm) restarted for desktop use; stop it again before resuming.
+
+big_model_overrides:           # v2.2 — models >4GB cannot host 24K q8_0 KV
+  rule: ctx 16384, kv q4_0, coding_max_tokens 12288
+  applied: [ternary-bonsai-q4, xlam-2-8b, qwen3.5-9b]

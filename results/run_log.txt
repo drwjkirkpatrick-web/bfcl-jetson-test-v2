@@ -854,3 +854,209 @@ Results saved to /home/walker/projects/bfcl-jetson-test-v2/results/hermes3-3b-q4
 [llama3.2-3b] ctx=24576 ngl=15 template=built-in
 ================================================================
   Server READY
+] simple_11    (finish=tool_calls)
+  [PASS] simple_12    (finish=tool_calls)
+  [FAIL] simple_13    (finish=tool_calls)
+  [FAIL] simple_14    (finish=tool_calls)
+  [PASS] simple_15    (finish=tool_calls)
+  [FAIL] simple_16    (finish=tool_calls)
+  [FAIL] simple_17    (finish=tool_calls)
+  [FAIL] simple_18    (finish=tool_calls)
+  [FAIL] simple_19    (finish=tool_calls)
+  [FAIL] simple_20    (finish=tool_calls)
+  [PASS] simple_21    (finish=tool_calls)
+  [PASS] simple_22    (finish=tool_calls)
+  [PASS] simple_23    (finish=tool_calls)
+  [PASS] simple_24    (finish=tool_calls)
+  [PASS] simple_25    (finish=tool_calls)
+  [FAIL] simple_26    (finish=tool_calls)
+  [FAIL] simple_27    (finish=tool_calls)
+  [PASS] simple_28    (finish=tool_calls)
+  [FAIL] simple_29    (finish=tool_calls)
+  [PASS] simple_30    (finish=tool_calls)
+============================================================
+MODERATE PARALLEL (12 tests)
+============================================================
+  [FAIL] par_01       (finish=?)
+  [FAIL] par_02       (finish=?)
+  [FAIL] par_03       (finish=?)
+  [FAIL] par_04       (finish=?)
+  [FAIL] par_05       (finish=?)
+  [FAIL] par_06       (finish=?)
+  [FAIL] par_07       (finish=?)
+  [FAIL] par_08       (finish=tool_calls)
+  [FAIL] par_09       (finish=?)
+  [FAIL] par_10       (finish=?)
+  [FAIL] par_11       (finish=?)
+  [FAIL] par_12       (finish=?)
+============================================================
+MODERATE CHAINED (8 tests)
+============================================================
+  [FAIL] chain_01     (1/2 steps)
+  [FAIL] chain_02     (1/2 steps)
+  [FAIL] chain_03     (1/2 steps)
+  [FAIL] chain_04     (1/2 steps)
+  [FAIL] chain_05     (1/2 steps)
+  [FAIL] chain_06     (1/2 steps)
+  [FAIL] chain_07     (1/2 steps)
+  [FAIL] chain_08     (1/2 steps)
+============================================================
+CODING (2 tests)
+============================================================
+  [PASS] coding_python_game  score=3/4
+  [PASS] coding_html_profile  score=5/7
+
+============================================================
+BFCL v2 Results: llama3.2-3b
+============================================================
+Tool tests: 18/50 (36.0%)
+Coding:    2/2 (100.0%)
+Overall:   20/52 (38.5%)
+  simple                18/30  ( 60.0%)
+  moderate_parallel      0/12  (  0.0%)
+  moderate_chained       0/8   (  0.0%)
+  coding                 2/2   (100.0%)
+
+Results saved to /home/walker/projects/bfcl-jetson-test-v2/results/llama3.2-3b.json
+
+  Archived -> /home/walker/projects/bfcl-jetson-test-v2-results/llama3.2-3b.json
+
+================================================================
+[hammer2.1-3b] ctx=24576 ngl=99 template=hermes3-tool-use.jinja
+================================================================
+  Server READY
+[PASS] simple_11    (finish=tool_calls)
+  [PASS] simple_12    (finish=tool_calls)
+  [PASS] simple_13    (finish=stop)
+  [PASS] simple_14    (finish=tool_calls)
+  [PASS] simple_15    (finish=tool_calls)
+  [PASS] simple_16    (finish=tool_calls)
+  [PASS] simple_17    (finish=tool_calls)
+  [FAIL] simple_18    (finish=tool_calls)
+  [PASS] simple_19    (finish=stop)
+  [PASS] simple_20    (finish=tool_calls)
+  [PASS] simple_21    (finish=stop)
+  [PASS] simple_22    (finish=stop)
+  [PASS] simple_23    (finish=tool_calls)
+  [PASS] simple_24    (finish=stop)
+  [PASS] simple_25    (finish=tool_calls)
+  [PASS] simple_26    (finish=tool_calls)
+  [PASS] simple_27    (finish=stop)
+  [PASS] simple_28    (finish=tool_calls)
+  [PASS] simple_29    (finish=tool_calls)
+  [PASS] simple_30    (finish=tool_calls)
+============================================================
+MODERATE PARALLEL (12 tests)
+============================================================
+  [PASS] par_01       (finish=stop)
+  [PASS] par_02       (finish=stop)
+  [PASS] par_03       (finish=stop)
+  [PASS] par_04       (finish=stop)
+  [PASS] par_05       (finish=stop)
+  [PASS] par_06       (finish=stop)
+  [PASS] par_07       (finish=stop)
+  [PASS] par_08       (finish=stop)
+  [FAIL] par_09       (finish=length)
+  [PASS] par_10       (finish=stop)
+  [PASS] par_11       (finish=stop)
+  [PASS] par_12       (finish=stop)
+============================================================
+MODERATE CHAINED (8 tests)
+============================================================
+  [FAIL] chain_01     (1/2 steps)
+  [PASS] chain_02     (2/2 steps)
+  [PASS] chain_03     (2/2 steps)
+  [PASS] chain_04     (2/2 steps)
+  [PASS] chain_05     (2/2 steps)
+  [PASS] chain_06     (2/2 steps)
+  [PASS] chain_07     (2/2 steps)
+  [PASS] chain_08     (2/2 steps)
+============================================================
+CODING (2 tests)
+============================================================
+  [PASS] coding_python_game  score=3/4
+  [PASS] coding_html_profile  score=6/7
+
+============================================================
+BFCL v2 Results: hammer2.1-3b
+============================================================
+Tool tests: 47/50 (94.0%)
+Coding:    2/2 (100.0%)
+Overall:   49/52 (94.2%)
+  simple                29/30  ( 96.7%)
+  moderate_parallel     11/12  ( 91.7%)
+  moderate_chained       7/8   ( 87.5%)
+  coding                 2/2   (100.0%)
+
+Results saved to /home/walker/projects/bfcl-jetson-test-v2/results/hammer2.1-3b.json
+
+  Archived -> /home/walker/projects/bfcl-jetson-test-v2-results/hammer2.1-3b.json
+
+================================================================
+[qwen3.5-9b] ctx=24576 ngl=99 template=built-in
+================================================================
+  Server READY
+sh=exception)
+  [FAIL] simple_13    (finish=exception)
+  [FAIL] simple_14    (finish=exception)
+  [FAIL] simple_15    (finish=exception)
+  [FAIL] simple_16    (finish=exception)
+  [FAIL] simple_17    (finish=exception)
+  [FAIL] simple_18    (finish=exception)
+  [FAIL] simple_19    (finish=exception)
+  [FAIL] simple_20    (finish=exception)
+  [FAIL] simple_21    (finish=exception)
+  [FAIL] simple_22    (finish=exception)
+  [FAIL] simple_23    (finish=exception)
+  [FAIL] simple_24    (finish=exception)
+  [FAIL] simple_25    (finish=exception)
+  [FAIL] simple_26    (finish=exception)
+  [FAIL] simple_27    (finish=exception)
+  [FAIL] simple_28    (finish=exception)
+  [FAIL] simple_29    (finish=exception)
+  [FAIL] simple_30    (finish=exception)
+============================================================
+MODERATE PARALLEL (12 tests)
+============================================================
+  [FAIL] par_01       (finish=exception)
+  [FAIL] par_02       (finish=exception)
+  [FAIL] par_03       (finish=exception)
+  [FAIL] par_04       (finish=exception)
+  [FAIL] par_05       (finish=exception)
+  [FAIL] par_06       (finish=exception)
+  [FAIL] par_07       (finish=exception)
+  [FAIL] par_08       (finish=exception)
+  [FAIL] par_09       (finish=exception)
+  [FAIL] par_10       (finish=exception)
+  [FAIL] par_11       (finish=exception)
+  [FAIL] par_12       (finish=exception)
+============================================================
+MODERATE CHAINED (8 tests)
+============================================================
+  [FAIL] chain_01     (1/2 steps)
+  [FAIL] chain_02     (1/2 steps)
+  [FAIL] chain_03     (1/2 steps)
+  [FAIL] chain_04     (1/2 steps)
+  [FAIL] chain_05     (1/2 steps)
+  [FAIL] chain_06     (1/2 steps)
+  [FAIL] chain_07     (1/2 steps)
+  [FAIL] chain_08     (1/2 steps)
+============================================================
+CODING (2 tests)
+============================================================
+  [FAIL] coding_python_game  score=0/0
+  [FAIL] coding_html_profile  score=0/0
+
+============================================================
+BFCL v2 Results: qwen3.5-9b
+============================================================
+Tool tests: 8/50 (16.0%)
+Coding:    0/2 (0.0%)
+Overall:   8/52 (15.4%)
+  simple                 8/30  ( 26.7%)
+  moderate_parallel      0/12  (  0.0%)
+  moderate_chained       0/8   (  0.0%)
+  coding                 0/2   (  0.0%)
+
+Results saved to /home/walker/projects/bfcl-jetson-test-v2/results/qwen3.5-9b.json
+

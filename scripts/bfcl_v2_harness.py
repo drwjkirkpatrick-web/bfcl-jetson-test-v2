@@ -405,7 +405,7 @@ def grade_html_profile(html: str) -> dict:
     return {"score": score, "max": 7, "checks": checks}
 
 
-def run_coding_tests(host, port, model, results, prompts_dir, timeout=6000):
+def run_coding_tests(host, port, model, results, prompts_dir, timeout=6000, max_tokens=16384):
     """Run the two coding tests from prompts/*.txt. Each test is fail-safe."""
     results["categories"]["coding"] = {"total": 0, "correct": 0}
 
@@ -416,7 +416,7 @@ def run_coding_tests(host, port, model, results, prompts_dir, timeout=6000):
         try:
             prompt = (Path(prompts_dir) / prompt_file).read_text()
             response = send_request(host, port, [{"role": "user", "content": prompt}],
-                                    model=model, max_tokens=16384, timeout=timeout)
+                                    model=model, max_tokens=max_tokens, timeout=timeout)
             text = ""
             if response.get("choices"):
                 text = response["choices"][0]["message"].get("content") or ""
@@ -448,6 +448,8 @@ def main() -> int:
     parser.add_argument("--output", default=None)
     parser.add_argument("--timeout", type=int, default=120, help="Per-request timeout seconds")
     parser.add_argument("--coding-timeout", type=int, default=6000)
+    parser.add_argument("--coding-max-tokens", type=int, default=16384,
+                        help="Max generation tokens for coding tests (cap below server ctx - prompt)")
     parser.add_argument("--coding-only", action="store_true")
     parser.add_argument("--tool-tests-only", action="store_true")
     args = parser.parse_args()
@@ -492,7 +494,7 @@ def main() -> int:
         print("CODING (2 tests)")
         print("=" * 60)
         run_coding_tests(args.host, args.port, args.model, results, prompts_dir,
-                         timeout=args.coding_timeout)
+                         timeout=args.coding_timeout, max_tokens=args.coding_max_tokens)
 
     # Summary
     print("\n" + "=" * 60)
