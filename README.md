@@ -138,6 +138,7 @@ bfcl-jetson-test-v2/
 +-- settings.yaml        # full saved configuration snapshot
 +-- templates/           # Qwen2.5, Hermes3, Hammer tool-call templates (from v1)
 +-- docs/bfcl_v4_research.md  # BFCL research notes (v1, carried forward)
++-- docs/BFCL_Jetson_Test_v2_Report.pdf  # this report in PDF form (charts + tables)
 +-- results/             # <model>.json per model + server logs (gitignored)
 ```
 
