@@ -76,7 +76,7 @@ runner:
     - "ternary-bonsai-q4: server-fail -> 84.6% (16K ctx + q4_0 KV)"
     - "xlam-2-8b:    server-fail -> 80.8% (16K ctx + q4_0 KV)"
   added_in_v2:
-    - "gemma4-e4b-qat: 48/52 (92.3%) on 2026-09-30 - v2 debut, not from v1.
+    - "gemma4-e4b-qat: 48/52 (92.3%) on 2026-09-29 - v2 debut, not from v1.
       simple 28/30, parallel 10/12, chained 8/8 (only perfect chained score),
       coding 2/2. Failures: 3 string-surface near-misses (run vs running,
       downtown theater vs downtown) + 1 empty response on par_08."

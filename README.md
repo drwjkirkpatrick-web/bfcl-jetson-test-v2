@@ -68,7 +68,7 @@ The 18th model, Gemma 4 E4B QAT (4.0GB dense), debuts directly in v2 - it was no
 
 ## Results (17/18 complete - run paused)
 
-Every score below came from the fixed v2.1 harness: structured extraction with text fallback, duplicate-call dedupe, and per-model memory sizing, following BFCL's dual FC/Prompt-mode evaluation design.[1] Run dates 2026-09-29 (17 models) and 2026-09-30 (E4B).
+Every score below came from the fixed v2.1 harness: structured extraction with text fallback, duplicate-call dedupe, and per-model memory sizing, following BFCL's dual FC/Prompt-mode evaluation design.[1] Run date 2026-09-29.
 
 | Model | Overall | Simple | Parallel | Chained | Coding | Notes |
 |---|---|---|---|---|---|---|
