@@ -91,6 +91,10 @@ MODELS = [
      "template": "hermes3-tool-use.jinja", "ctx": 24576, "ngl": 99},
     {"name": "qwen3.5-9b",    "path": "/home/walker/models/Qwen_Qwen3.5-9B-Q3_K_S.gguf",
      "template": None, "ctx": 16384, "ngl": 99, "kv": "q4_0", "note": "4.1GB DeltaNet hybrid: q4_0 KV to fit", "coding_max_tokens": 12288},
+    {"name": "gemma4-e4b-qat", "path": "/home/walker/models/gemma-4-E4B-it-qat-UD-Q4_K_XL.gguf",
+     "template": None, "ctx": 16384, "ngl": 99, "kv": "q4_0",
+     "note": "4.0GB QAT dense; built-in template handles tool calls (verified via Serena MCP)",
+     "coding_max_tokens": 12288},
 ]
 
 

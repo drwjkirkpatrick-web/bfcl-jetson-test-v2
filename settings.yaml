@@ -41,6 +41,7 @@ server:                        # launched fresh per model by scripts/run_v2.py
     llama3.2-3b:       {ngl: 15, template: built-in}    # hybrid: partial offload
     hammer2.1-3b:      {ngl: 99, template: hermes3-tool-use.jinja}
     qwen3.5-9b:         {ngl: 99, template: built-in}   # DeltaNet hybrid
+    gemma4-e4b-qat:     {ngl: 99, template: built-in}   # dense QAT generalist; big-model rule
 
 harness:
   tool_tests: {simple: 30, moderate_parallel: 12, moderate_chained: 8}
@@ -70,16 +71,21 @@ runner:
   results: results/<model>.json (gitignored, working copy)
   archive: ~/projects/bfcl-jetson-test-v2-results/   # outside repo, for analysis
   retests_completed:           # v2.1 fixed-harness retests (2026-09-29)
-    - granite3.2-2b: 1.9% -> 82.7%  (text-fallback extraction)
-    - xlam-2-1b:    3.8% -> 84.6%  (duplicate-call dedupe)
-    - ternary-bonsai-q4: server-fail -> 84.6% (16K ctx + q4_0 KV)
-    - xlam-2-8b:    server-fail -> 80.8% (16K ctx + q4_0 KV)
+    - "granite3.2-2b: 1.9% -> 82.7%  (text-fallback extraction)"
+    - "xlam-2-1b:    3.8% -> 84.6%  (duplicate-call dedupe)"
+    - "ternary-bonsai-q4: server-fail -> 84.6% (16K ctx + q4_0 KV)"
+    - "xlam-2-8b:    server-fail -> 80.8% (16K ctx + q4_0 KV)"
+  added_in_v2:
+    - "gemma4-e4b-qat: 48/52 (92.3%) on 2026-09-30 - v2 debut, not from v1.
+      simple 28/30, parallel 10/12, chained 8/8 (only perfect chained score),
+      coding 2/2. Failures: 3 string-surface near-misses (run vs running,
+      downtown theater vs downtown) + 1 empty response on par_08."
   pending:                     # PAUSED 2026-09-29 at user request
-    - qwen3.5-9b: OOM-killed twice (24K q8_0 ctx, then 16K q4_0 ctx; kernel
+    - "qwen3.5-9b: OOM-killed twice (24K q8_0 ctx, then 16K q4_0 ctx; kernel
       killed llama-server at ~4.6-4.9GB anon-rss). Next attempt: ctx 12288,
-      q4_0 KV, coding-max-tokens 8192 — or tool-tests-only at 8192 like v1.
-      GUI (gdm) restarted for desktop use; stop it again before resuming.
+      q4_0 KV, coding-max-tokens 8192 - or tool-tests-only at 8192 like v1.
+      GUI (gdm) restarted for desktop use; stop it again before resuming."
 
 big_model_overrides:           # v2.2 — models >4GB cannot host 24K q8_0 KV
   rule: ctx 16384, kv q4_0, coding_max_tokens 12288
-  applied: [ternary-bonsai-q4, xlam-2-8b, qwen3.5-9b]
+  applied: [ternary-bonsai-q4, xlam-2-8b, qwen3.5-9b, gemma4-e4b-qat]

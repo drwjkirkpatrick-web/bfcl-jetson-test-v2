@@ -2,9 +2,9 @@
 
 Welcome! This benchmark asks a question that matters for anyone running models at the edge: which small LLMs can actually DO things - call tools, chain steps, and write working code - on a single 8GB board? The design follows BFCL, the community-standard function-calling benchmark from UC Berkeley.[1]
 
-We took the 17 best function-callers from [BFCL Jetson Test v1](https://github.com/drwjkirkpatrick-web/bfcl-jetson-test) and put them through a harder, more human-shaped exam: 50 tool-calling tests plus two auto-graded coding builds, all served locally by llama.cpp on a Jetson Orin Nano 8GB.[6] Every model runs in the same hardware envelope you would actually deploy - no cloud, no GPU cluster, just one small board doing its best.
+We took the 17 best function-callers from [BFCL Jetson Test v1](https://github.com/drwjkirkpatrick-web/bfcl-jetson-test) - plus one v2 debut, Gemma 4 E4B QAT, the smallest model already proven as an agentic tool-caller on this hardware - and put them through a harder, more human-shaped exam: 50 tool-calling tests plus two auto-graded coding builds, all served locally by llama.cpp on a Jetson Orin Nano 8GB.[6] Every model runs in the same hardware envelope you would actually deploy - no cloud, no GPU cluster, just one small board doing its best.
 
-The headline: single-call accuracy is nearly saturated at this scale - exactly the saturation BFCL documented on the full leaderboard[1][7] - and the real separation comes from chained multi-step calls and code that actually runs. A 3B Granite model topping the leaderboard at 96.2% is the kind of result that makes edge AI feel less like a compromise and more like a choice.
+The headline: single-call accuracy is nearly saturated at this scale - exactly the saturation BFCL documented on the full leaderboard[1][7] - and the real separation comes from chained multi-step calls and code that actually runs. A 3B Granite model topping the leaderboard at 96.2% is the kind of result that makes edge AI feel less like a compromise and more like a choice. And the only perfect score on chained multi-step calling belongs to a 4B generalist, not a function-calling specialist.
 
 ## Why v2
 
@@ -37,12 +37,13 @@ Responses are read through two paths, mirroring BFCL's separate FC and Prompt tr
 
 The grader deliberately avoids an LLM judge: structural checks are grep-based, and the Python game is executed with piped input - a pass means the file actually runs on your machine, the way you would use it. That determinism is BFCL's core design goal, and it carried over intact.[1][2]
 
-## Models (17, from v1)
+## Models (18)
 
-All 17 models that scored >=50% on the v1 screen,[6] run with their v1-proven settings - template overrides where the GGUF's built-in template lacked tool-call markers (v1 finding: a broken template caps a model at 20%, and llama.cpp's differential autoparser can only parse formats the template itself renders[4][6]):
+The 17 models that scored >=50% on the v1 screen,[6] run with their v1-proven settings - template overrides where the GGUF's built-in template lacked tool-call markers (v1 finding: a broken template caps a model at 20%, and llama.cpp's differential autoparser can only parse formats the template itself renders[4][6]):
 
 | Model | Quant | v1 score | Template |
 |---|---|---|---|
+| Gemma 4 E4B QAT | UD-Q4_K_XL | — (v2 debut) | built-in |
 | Granite 4.0-3B | Q4_K_M | 96.7% | built-in |
 | Granite 4.1-3B | Q4_K_M | 93.3% | built-in |
 | Granite 4.2-3B | Q4_K_M | 93.3% | built-in |
@@ -63,14 +64,17 @@ All 17 models that scored >=50% on the v1 screen,[6] run with their v1-proven se
 
 Excluded (v1 score < 50%): DeepSeek-R1 1.5B/7B, Ministral-3B, SmallThinker-3B, Qwen2.5-Coder - reasoning-model CoT and unfixable template mismatches.[6]
 
-## Results (16/17 complete - run paused)
+The 18th model, Gemma 4 E4B QAT (4.0GB dense), debuts directly in v2 - it was not part of the v1 screen. It earned the slot as the smallest model previously confirmed as a working agentic tool-caller on this board (Serena MCP bridge tests: multi-turn create/read/write tool loops for full HTML game generation), making it the natural candidate to test against the dedicated function-callers.
 
-Every score below came from the fixed v2.1 harness: structured extraction with text fallback, duplicate-call dedupe, and per-model memory sizing, following BFCL's dual FC/Prompt-mode evaluation design.[1] Run date 2026-09-29.
+## Results (17/18 complete - run paused)
+
+Every score below came from the fixed v2.1 harness: structured extraction with text fallback, duplicate-call dedupe, and per-model memory sizing, following BFCL's dual FC/Prompt-mode evaluation design.[1] Run dates 2026-09-29 (17 models) and 2026-09-30 (E4B).
 
 | Model | Overall | Simple | Parallel | Chained | Coding | Notes |
 |---|---|---|---|---|---|---|
 | granite4-3b | 50/52 (96.2%) | 29/30 | 12/12 | 7/8 | 2/2 | champion - perfect parallel |
 | hammer2.1-3b | 49/52 (94.2%) | 29/30 | 11/12 | 7/8 | 2/2 | biggest v1-to-v2 climb |
+| gemma4-e4b-qat | 48/52 (92.3%) | 28/30 | 10/12 | 8/8 | 2/2 | only perfect chained score |
 | granite4.1-3b | 48/52 (92.3%) | 28/30 | 11/12 | 7/8 | 2/2 | |
 | ternary-bonsai-tq2 | 46/52 (88.5%) | 29/30 | 11/12 | 4/8 | 2/2 | ternary, sub-4-bit - and it codes |
 | arch-agent-1.5b | 46/52 (88.5%) | 28/30 | 10/12 | 6/8 | 2/2 | best small agentic profile |
@@ -90,10 +94,11 @@ PAUSED: qwen3.5-9b (4.1GB DeltaNet hybrid) - the kernel OOM-killed its server tw
 
 ### What the numbers say
 
-- Chained calls are the great divider. Granite 4.x and Hammer2.1 pass 5-7 of 8 chained tests; nine models score exactly 0 - they emit a correct first call, then cannot derive second-step arguments from returned data. This is BFCL's multi-turn gap reproduced at edge scale.[7]
+- Chained calls are the great divider. Granite 4.x and Hammer2.1 pass 5-7 of 8 chained tests; nine models score exactly 0 - they emit a correct first call, then cannot derive second-step arguments from returned data. This is BFCL's multi-turn gap reproduced at edge scale.[7] The one perfect chained score belongs to E4B - a generalist QAT model, not a function-calling specialist - which never once failed to derive step-2 arguments from returned data. Deriving the next call from a result is a reasoning skill more than a format skill, and it shows.
 - Simple is saturated. Tool-trained models cluster at 27-29/30 - consistent with BFCL's single-turn saturation, which is exactly why BFCL re-weighted toward agentic categories.[1][7]
-- Coding is table stakes - with two exceptions. Fifteen of sixteen models built a runnable tic-tac-toe and a structurally sound HTML page; granite3.2-2b passed Python but produced no parsable HTML, and llama3.2-3b codes 2/2 while calling tools at 38.5%. Execution-based grading keeps these claims honest - deterministic, executable checks over LLM-judge scoring.[1][2]
+- Coding is table stakes - with two exceptions. Sixteen of seventeen models built a runnable tic-tac-toe and a structurally sound HTML page; granite3.2-2b passed Python but produced no parsable HTML, and llama3.2-3b codes 2/2 while calling tools at 38.5%. Execution-based grading keeps these claims honest - deterministic, executable checks over LLM-judge scoring.[1][2]
 - Quantization bites unevenly. Hermes3-3B Q4 loses 8 simple-call points to Q5 (19/30 vs 27/30) yet matches it on parallel (10/12). Ternary Bonsai's TQ2_0 beats its own Q4_0 on chained tests (4/8 vs 3/8).
+- Near-misses cluster on string surface form. Three of E4B's four failures are argument-form near-misses, not wrong calls: it sent `activity: "run"` where the ground truth expects the literal word "running" from the question, and it over-specified `theater: "downtown theater"` where the expected value is `"downtown"`. The calls would work against a real API that matched loosely; strict AST equality does not. The fourth was a single empty response on a three-call parallel test. When a model's failures are all surface-form, its true ceiling is higher than the score reads.
 - Harness honesty matters. Two "0%" scores during the run were harness artifacts, not model failures - fixed by the text fallback and dedupe, then retested (granite3.2-2b: 1.9% -> 82.7%; xlam-2-1b: 3.8% -> 84.6%). A benchmark that cannot tell those apart is not measuring models, it is measuring itself.
 
 ## Hardware & Server
